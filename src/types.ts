@@ -15,3 +15,4 @@ export type CarData = {
         }
     };
 }
+export type Car = Omit<CarData, '_links'>; // CarData type without the _links property

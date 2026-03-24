@@ -1,67 +1,124 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+
 import DialogTitle from '@mui/material/DialogTitle';
+import type { Car } from '../types';
+import { DialogContentText } from '@mui/material';
 
 
 export default function AddCar() {
-  const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [car, setCar] = useState<Car>({
+        brand: '',
+        model: '',
+        color: '',
+        fuel: '',
+        modelYear: new Date().getFullYear(),
+        price: 0
+    });
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries((formData as any).entries());
-    const email = formJson.email;
-    console.log(email);
-    handleClose();
-  };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-  return (
-    
-    <>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
-          </DialogContentText>
-          <form onSubmit={handleSubmit} id="subscription-form">
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="name"
-              name="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              variant="standard"
-            />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" form="subscription-form">
-            Subscribe
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
+    const handleSubmit = () => {
+
+        handleClose();
+    };
+
+    return (
+
+        <>
+            <Button variant="outlined" onClick={handleClickOpen}>
+                Add Car
+            </Button>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>New Car</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        To add a new car, please fill out the form below.
+                    </DialogContentText>
+
+                    <TextField
+
+                        required
+                        margin="dense"
+                        label="Brand"
+                        value = {car.brand}
+                        onChange = {e => setCar({...car, brand: e.target.value})}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+
+                        required
+                        margin="dense"
+                        label="Model"
+                        value = {car.model}
+                        onChange = {e => setCar({...car, model: e.target.value})}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+
+                        required
+                        margin="dense"
+                        label="Color"
+                        value = {car.color}
+                        onChange = {e => setCar({...car, color: e.target.value})}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+
+                        required
+                        margin="dense"
+                        label="Fuel"
+                        value = {car.fuel}
+                        onChange = {e => setCar({...car, fuel: e.target.value})}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+
+                        required
+                        margin="dense"
+                        label="Model Year"
+                        type="number"
+                        value = {car.modelYear}
+                        onChange = {e => setCar({...car, modelYear: parseInt(e.target.value) || 0})}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+
+                        required
+                        margin="dense"
+                        label="Price"
+                        type="number"
+                        value = {car.price}
+                        onChange = {e => setCar({...car, price: parseFloat(e.target.value) || 0})}
+                        fullWidth
+                        variant="standard"
+                    />
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleSubmit}>
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
 }
