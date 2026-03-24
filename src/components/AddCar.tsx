@@ -9,8 +9,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import type { Car } from '../types';
 import { DialogContentText } from '@mui/material';
 
+type AddCarProps = {
+    handleAdd: (car: Car) => void;
+}
 
-export default function AddCar() {
+
+export default function AddCar(props: AddCarProps) {
     const [open, setOpen] = useState(false);
     const [car, setCar] = useState<Car>({
         brand: '',
@@ -31,8 +35,16 @@ export default function AddCar() {
     };
 
     const handleSubmit = () => {
-
+        props.handleAdd(car);
         handleClose();
+        setCar({
+            brand: '',
+            model: '',
+            color: '',
+            fuel: '',
+            modelYear: new Date().getFullYear(),
+            price: 0
+        });
     };
 
     return (

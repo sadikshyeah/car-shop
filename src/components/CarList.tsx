@@ -1,9 +1,10 @@
-import type { CarData } from '../types';
+import type { CarData, Car } from '../types';
 import { useState, useEffect } from 'react';
 import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import AddCar from './AddCar';
 import Stack from '@mui/material/Stack';
+
 
 
 function CarList() {
@@ -65,7 +66,25 @@ function CarList() {
         }
     }
 
+    const handleAdd = (car: Car) => {
+        fetch(import.meta.env.VITE_API_URL + "/cars", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+        },
+            body: JSON.stringify(car)
 
+        })
+    
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error when adding car');
+        }
+        return response.json();
+    })
+        .then(() => getCars())
+        .catch(err => console.error('Error adding car:', err));
+    }
 
     useEffect(() => {
         getCars();
@@ -73,8 +92,8 @@ function CarList() {
 
     return (
         <>
-            <Stack direction ="row"  sx={{ mb: 2, mt: 2 }}>
-                <AddCar />
+            <Stack direction="row" sx={{ mb: 2, mt: 2 }}>
+                <AddCar  handleAdd={handleAdd}/>
             </Stack>
 
             <div style={{ width: '100%', height: 400 }}>
