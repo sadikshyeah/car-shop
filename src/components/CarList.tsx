@@ -4,6 +4,11 @@ import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-dat
 import Button from '@mui/material/Button';
 import AddCar from './AddCar';
 import Stack from '@mui/material/Stack';
+import EditCar from './EditCar';
+
+import { fetchCar, deleteCar } from "../carapi"
+
+
 
 
 
@@ -11,105 +16,101 @@ function CarList() {
     const [cars, setCars] = useState<CarData[]>([]);
 
     const columns: GridColDef[] = [
-        { field: 'brand', headerName: 'Brand', width: 90 },
-        { field: 'model', headerName: 'Model', width: 130 },
-        { field: 'color', headerName: 'Color', width: 90 },
-        { field: 'fuel', headerName: 'Fuel', width: 90 },
-        { field: 'modelYear', headerName: 'ModelYear', width: 120 },
-        { field: 'price', headerName: 'Price', width: 120 },
-        {
-            field: '_links.self.href',
-            headerName: "",
-            sortable: false,
-            filterable: false,
-            renderCell: (params: GridRenderCellParams) => (
-                <Button
-                    color="error"
-                    size="small"
-                    onClick={() => handleDelete(params.id as string)}>
-                    Delete
-                </Button>
-            )
-        }
-    ];
+        { field: "brand", headerName: "Brand", width: 200 },
+    { field: "model", headerName: "Model", width: 150 },
+    { field: "color", headerName: "Color", width: 100 },
+    { field: "fuel", headerName: "Fuel" },
+    { field: "modelYear", headerName: "Model year" },
+    { field: "price", headerName: "Price (€)" },
+    {
+      field: "_links.self.href",
+      headerName: "",
+      sortable: false,
+      filterable: false,
+      renderCell: (params: GridRenderCellParams) =>
+        <Button 
+          color="error" 
+          size="small" 
+          onClick={() => handleDelete(params.id as string)}>
+          Delete
+        </Button>
 
-
-    const getCars = () => {
-        fetch(import.meta.env.VITE_API_URL + '/cars')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error when fetching cars');
-                }
-                return response.json();
-            })
-            .then(data => setCars(data._embedded?.cars))
-            .catch(err => console.error(err))
-
-    };
-
-    const handleDelete = (url: string) => {
-        if (window.confirm("Are you sure?")) {
-            fetch(url, {
-                method: 'DELETE'
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error when deleting car');
-
-                        return response.json();
-                    }
-
-                })
-                .then(() => getCars())
-                .catch(err => console.error('Error deleting car:', err));
-
-        }
+        }, 
+    {
+      field: "_links.car.href",
+      headerName: "",
+      sortable: false,
+      filterable: false,
+      renderCell: (params: GridRenderCellParams) => 
+        <EditCar url={params.id as string} car={params.row} handleUpdate={handleUpdate} />    
+    }       
+  ]
+  const getCars = () => {
+  fetchCar()
+    .then(data => setCars(data._embedded.cars))
+    .catch(err => console.error(err))
+  } 
+const handleDelete = (url: string) => {
+    if (window.confirm("Are you sure?")) {
+        deleteCar(url)
+      .then(() => getCars())
+      .catch(err => console.error(err));
     }
-
-    const handleAdd = (car: Car) => {
-        fetch(import.meta.env.VITE_API_URL + "/cars", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-        },
-            body: JSON.stringify(car)
-
-        })
-    
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error when adding car');
-        }
-        return response.json();
+  }
+   const handleAdd = (car: Car) => {
+    fetch(import.meta.env.VITE_API_URL + "/cars", {
+      method: "POST",
+      headers: {
+        "Content-type":"application/json"
+      },
+      body: JSON.stringify(car)
     })
-        .then(() => getCars())
-        .catch(err => console.error('Error adding car:', err));
-    }
+    .then(response => {
+      if (!response.ok)
+        throw new Error("Error when adding a car");
 
-    useEffect(() => {
-        getCars();
-    }, []);
+      return response.json();
+    })
+    .then(() => getCars())
+    .catch(err => console.error(err));
+  }
+  const handleUpdate = (url: string, updatedCar: Car) => {
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-type":"application/json"
+      },
+      body: JSON.stringify(updatedCar)
+    })
+    .then(response => {
+      if (!response.ok)
+        throw new Error("Error when updating a car");
 
-    return (
-        <>
-            <Stack direction="row" sx={{ mb: 2, mt: 2 }}>
-                <AddCar  handleAdd={handleAdd}/>
-            </Stack>
+      return response.json();
+    })
+    .then(() => getCars())
+    .catch(err => console.error(err))
 
-            <div style={{ width: '100%', height: 400 }}>
+  }
+useEffect(() => {
+    getCars();
+  }, []);
 
-                <DataGrid
-                    rows={cars}
-                    columns={columns}
-                    getRowId={(row) => row._links.self.href}
-                    autoPageSize
-                    rowSelection={false}
-
-                />
-            </div>
-        </>
-    );
+  return(
+    <>
+      <Stack direction="row" sx={{ mt: 2, mb: 2 }} >
+        <AddCar handleAdd={handleAdd} />
+      </Stack>
+      <div style={{ width: "90%", height: 500 }}>
+        <DataGrid 
+          rows={cars}
+          columns={columns}
+          getRowId={row => row._links.self.href}
+          autoPageSize
+          rowSelection={false}
+        />
+      </div>
+    </>
+  );
 }
-
-
 export default CarList;

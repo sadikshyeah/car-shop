@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 
 import DialogTitle from '@mui/material/DialogTitle';
 import type { Car } from '../types';
-import { DialogContentText } from '@mui/material';
+
+import CarForm from './CarForm';
 
 type AddCarProps = {
     handleAdd: (car: Car) => void;
@@ -55,75 +55,7 @@ export default function AddCar(props: AddCarProps) {
             </Button>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>New Car</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        To add a new car, please fill out the form below.
-                    </DialogContentText>
-
-                    <TextField
-
-                        required
-                        margin="dense"
-                        label="Brand"
-                        value = {car.brand}
-                        onChange = {e => setCar({...car, brand: e.target.value})}
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-
-                        required
-                        margin="dense"
-                        label="Model"
-                        value = {car.model}
-                        onChange = {e => setCar({...car, model: e.target.value})}
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-
-                        required
-                        margin="dense"
-                        label="Color"
-                        value = {car.color}
-                        onChange = {e => setCar({...car, color: e.target.value})}
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-
-                        required
-                        margin="dense"
-                        label="Fuel"
-                        value = {car.fuel}
-                        onChange = {e => setCar({...car, fuel: e.target.value})}
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-
-                        required
-                        margin="dense"
-                        label="Model Year"
-                        type="number"
-                        value = {car.modelYear}
-                        onChange = {e => setCar({...car, modelYear: parseInt(e.target.value) || 0})}
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-
-                        required
-                        margin="dense"
-                        label="Price"
-                        type="number"
-                        value = {car.price}
-                        onChange = {e => setCar({...car, price: parseFloat(e.target.value) || 0})}
-                        fullWidth
-                        variant="standard"
-                    />
-
-                </DialogContent>
+                <CarForm car={car} setCar={setCar} />
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={handleSubmit}>
